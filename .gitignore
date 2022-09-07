@@ -16,7 +16,6 @@ config.js
 /test/
 
 # next.js
-next.config.js
 /.next/
 /out/
 
