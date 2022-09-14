@@ -3,6 +3,7 @@ import { ethers } from 'ethers'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import Web3Modal from 'web3modal'
+import Image from 'next/image';
 
 import {
   marketplaceAddress
@@ -54,7 +55,7 @@ export default function ResellNFT() {
         />
         {
           image && (
-            <img className="rounded mt-4" width="350" src={image} />
+            <Image className="rounded mt-4" width="350" alt="" src={image} />
           )
         }
         <button onClick={listNFTForSale} className="font-bold mt-4 bg-blue-600 text-white rounded p-4 shadow-lg">

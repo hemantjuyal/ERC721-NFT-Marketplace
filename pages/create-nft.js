@@ -10,6 +10,7 @@ import {
 import {
   useRouter
 } from 'next/router'
+import Image from 'next/image';
 
 import Web3Modal from 'web3modal'
 import getConfig from 'next/config'
@@ -177,9 +178,9 @@ export default function CreateItem() {
     <input type = "file" name = "Asset" className = "my-4"
     required minLength="1" maxLength="10"
       onChange = {onChange}/>
-      {fileUrl && ( <
-        img className = "rounded mt-4"
-        width = "350"
+      {fileUrl && (
+        <Image className = "rounded mt-4"
+        width = "350" alt=""
         src = {fileUrl}/>)}
     <button onClick = {listNFTForSale}
       className = "font-bold mt-4 bg-blue-600 text-white rounded p-4 shadow-lg">

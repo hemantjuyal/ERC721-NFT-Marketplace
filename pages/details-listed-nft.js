@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Web3Modal from 'web3modal'
 import { useRouter } from 'next/router'
+import Image from 'next/image';
 import getConfig from 'next/config'
 const {
   publicRuntimeConfig
@@ -98,7 +99,7 @@ export default function DetailsNFT() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           {
             <div className="border shadow rounded-xl overflow-hidden">
-              <img src={nfts.image} className="rounded" />
+              <image src={nfts.image} alt="" className="rounded" />
               <div className="p-4 bg-green-900">
                 <p className="text-2xl font-bold text-white">Price - {nfts.price} Eth</p>
                 <input placeholder = "Transfer To Address" className = "mt-8 border rounded p-4"
