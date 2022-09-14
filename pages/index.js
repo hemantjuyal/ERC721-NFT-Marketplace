@@ -1,9 +1,16 @@
-import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
+import {
+  ethers
+} from 'ethers'
+import {
+  useEffect,
+  useState
+} from 'react'
 import axios from 'axios'
 import Web3Modal from 'web3modal'
 import getConfig from 'next/config'
-const { publicRuntimeConfig } = getConfig()
+const {
+  publicRuntimeConfig
+} = getConfig()
 
 import {
   marketplaceAddress
@@ -19,14 +26,16 @@ export default function Home() {
   }, [])
   async function loadNFTs() {
     /* create a generic provider and query for unsold market items */
-    const provider = new ethers.providers.JsonRpcProvider(publicRuntimeConfig.NETWORK_ENDPOINT_URL)
+    const networkEndpoint = publicRuntimeConfig.NETWORK_ENDPOINT_URL;
+    console.log('network endpoint', networkEndpoint);
+    const provider = new ethers.providers.JsonRpcProvider(networkEndpoint)
     const contract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, provider)
     const data = await contract.fetchMarketItems()
 
     /*
-    *  map over items returned from smart contract and format
-    *  them as well as fetch their token metadata
-    */
+     *  map over items returned from smart contract and format
+     *  them as well as fetch their token metadata
+     */
     const items = await Promise.all(data.map(async i => {
       const tokenUri = await contract.tokenURI(i.tokenId)
       const meta = await axios.get(tokenUri)
@@ -45,6 +54,7 @@ export default function Home() {
     setNfts(items)
     setLoadingState('loaded')
   }
+
   async function buyNft(nft) {
     /* needs the user to sign the transaction, so will use Web3Provider and sign it */
     const web3Modal = new Web3Modal()
@@ -61,30 +71,31 @@ export default function Home() {
     await transaction.wait()
     loadNFTs()
   }
-  if (loadingState === 'loaded' && !nfts.length) return (<h1 className="px-20 py-10 text-3xl">No items in marketplace</h1>)
-  return (
-    <div className="flex justify-center">
-      <div className="px-4" style={{ maxWidth: '1600px' }}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-          {
-            nfts.map((nft, i) => (
-              <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <img src={nft.image} />
-                <div className="p-4">
-                  <p style={{ height: '64px' }} className="text-2xl font-semibold">{nft.name}</p>
-                  <div style={{ height: '70px', overflow: 'hidden' }}>
-                    <p className="text-gray-400">{nft.description}</p>
-                  </div>
-                </div>
-                <div className="p-4 bg-black">
-                  <p className="text-2xl font-bold text-white">{nft.price} ETH</p>
-                  <button className="mt-4 w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" onClick={() => buyNft(nft)}>Buy</button>
-                </div>
-              </div>
-            ))
-          }
-        </div>
+  if (loadingState === 'loaded' && !nfts.length) return ( < h1 className = "px-20 py-10 text-3xl" > No items listed in the marketplace < /h1>)
+    return (
+      <div className = "flex justify-center" >
+      <div className = "px-4" style = {{maxWidth: '1600px'}} >
+      <h2 className="text-2xl py-2">Discover and Explore Items</h2>
+      <h3 className="text-2xl py-2">Showing {nfts.length} results </h3>
+      <div className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4" >
+      {nfts.map((nft, i) => (
+          <div key = {i}className = "border shadow rounded-xl overflow-hidden" >
+          <img src = {nft.image}/>
+          <div className = "p-4" >
+          <p style = {{height: '64px' }}className = "text-2xl font-semibold" > {nft.name} </p>
+          <div style = {{ height: '70px', overflow: 'hidden'}} >
+          <p className = "text-gray-400" > { nft.description} </p>
+          </div> </div>
+          <div className = "p-4 bg-green-900" >
+          <p className = "text-2xl font-bold text-white" > {nft.price} ETH </p>
+          <button className = "mt-4 w-full bg-blue-600 text-white font-bold py-2 px-12 rounded"
+          onClick = {() => buyNft(nft)} > Buy </button>
+          </div>
+          </div>
+        ))
+      }
       </div>
-    </div>
-  )
-}
+      </div>
+      </div>
+    )
+  }

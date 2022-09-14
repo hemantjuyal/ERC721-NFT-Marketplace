@@ -45,3 +45,5 @@ node_modules
 #Hardhat files
 cache
 artifacts
+*.txt
+package-lock.json
