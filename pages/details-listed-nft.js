@@ -1,23 +1,17 @@
-import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
+import {ethers} from 'ethers'
+import {useEffect, useState} from 'react'
 import axios from 'axios'
-import Web3Modal from 'web3modal'
-import { useRouter } from 'next/router'
+import {useRouter} from 'next/router'
 import Image from 'next/image';
+import Web3Modal from 'web3modal'
 import getConfig from 'next/config'
-const {
-  publicRuntimeConfig
-} = getConfig()
 import AES from 'crypto-js/aes';
-import { enc } from 'crypto-js';
-
-import {
-  marketplaceAddress
-} from '../config'
-
+import {enc} from 'crypto-js';
+import {marketplaceAddress} from '../config'
 import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
 
-const salt = publicRuntimeConfig.REACT_APP_SECRET_SALT;
+const {publicRuntimeConfig} = getConfig()
+const salt = process.env.NEXT_PUBLIC_SECRET_SALT;
 
 export default function DetailsNFT() {
   const [nfts, setNfts] = useState([])
@@ -89,9 +83,11 @@ export default function DetailsNFT() {
 
     const isTransferred = await contract.transferItemsListed(formInput.transferTo, data.tokenId)
     console.log('isTransferred ',isTransferred);
+    alert('transfer success');
+    router.push('/')
   }
 
-  if (loadingState === 'loaded' && !nfts.tokenId) return (<h1 className="py-10 px-20 text-3xl">No Listed Item Details to Show</h1>)
+  if (loadingState === 'loaded' && !nfts.tokenId) return (<h1 className="py-10 px-20 text-3xl">No Listed Item Details</h1>)
   return (
     <div>
       <div className="p-4">
@@ -99,7 +95,7 @@ export default function DetailsNFT() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           {
             <div className="border shadow rounded-xl overflow-hidden">
-              <image src={nfts.image} alt="" className="rounded" />
+              <img src={nfts.image} alt="" className="rounded" />
               <div className="p-4 bg-green-900">
                 <p className="text-2xl font-bold text-white">Price - {nfts.price} Eth</p>
                 <input placeholder = "Transfer To Address" className = "mt-8 border rounded p-4"

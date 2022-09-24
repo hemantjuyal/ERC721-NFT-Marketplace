@@ -1,21 +1,17 @@
-import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
+import {ethers} from 'ethers'
+import {useEffect, useState} from 'react'
 import axios from 'axios'
-import Web3Modal from 'web3modal'
-import { useRouter } from 'next/router'
+import {useRouter} from 'next/router'
 import Image from 'next/image';
+import Web3Modal from 'web3modal'
 import getConfig from 'next/config'
-const {
-  publicRuntimeConfig
-} = getConfig()
 import AES from 'crypto-js/aes';
-import { enc } from 'crypto-js';
-import {
-  marketplaceAddress
-} from '../config'
-
+import {enc} from 'crypto-js';
+import {marketplaceAddress} from '../config'
 import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
-const salt = publicRuntimeConfig.REACT_APP_SECRET_SALT;
+
+const {publicRuntimeConfig} = getConfig()
+const salt = process.env.NEXT_PUBLIC_SECRET_SALT;
 
 export default function CreatorDashboard() {
   const [nfts, setNfts] = useState([])
@@ -66,12 +62,13 @@ export default function CreatorDashboard() {
   }
 
   function detailsNft(nft) {
+    // nfts=[];
     const tokenId = hashing(nft.tokenId);
     router.push(`/details-listed-nft?id=${tokenId}`)
   }
 
 
-  if (loadingState === 'loaded' && !nfts.length) return (<h1 className="py-10 px-20 text-3xl">No NFTs listed by this account</h1>)
+  if (loadingState === 'loaded' && !nfts.length) return (<h1 className="py-10 px-20 text-3xl">No NFTs Listed</h1>)
   return (
     <div>
       <div className="p-4">
@@ -80,7 +77,7 @@ export default function CreatorDashboard() {
           {
             nfts.map((nft, i) => (
               <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <Image src={nft.image} alt="" className="rounded" />
+                <img src={nft.image} alt="" className="rounded" />
                 <div className="p-4 bg-green-900">
                   <p className="text-2xl font-bold text-white">Price - {nft.price} Eth</p>
                   <button className = "mt-4 w-full bg-blue-600 text-white font-bold py-2 px-12 rounded"

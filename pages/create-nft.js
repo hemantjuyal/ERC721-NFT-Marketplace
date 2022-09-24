@@ -1,49 +1,30 @@
-import {
-  useState
-} from 'react'
-import {
-  ethers
-} from 'ethers'
-import {
-  create as ipfsHttpClient
-} from 'ipfs-http-client'
-import {
-  useRouter
-} from 'next/router'
+import {ethers} from 'ethers'
+import {useEffect, useState} from 'react'
+import axios from 'axios'
+import {useRouter} from 'next/router'
 import Image from 'next/image';
-
 import Web3Modal from 'web3modal'
 import getConfig from 'next/config'
-const {
-  publicRuntimeConfig
-} = getConfig()
+import {create as ipfsHttpClient} from 'ipfs-http-client'
+import {marketplaceAddress} from '../config'
+import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
 
-const projectId = publicRuntimeConfig.REACT_APP_PROJECT_ID;
-const secret = publicRuntimeConfig.REACT_APP_API_KEY_SECRET;
-const ipfsEndpoint = publicRuntimeConfig.REACT_APP_IPFS_API_ENDPOINT;
-const gateway = publicRuntimeConfig.REACT_APP_DEDICATED_GATEWAY;
+const {publicRuntimeConfig} = getConfig()
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+const secret = process.env.NEXT_PUBLIC_API_KEY_SECRET;
+const ipfsEndpoint = process.env.NEXT_PUBLIC_IPFS_API_ENDPOINT;
+const gateway = process.env.NEXT_PUBLIC_DEDICATED_GATEWAY;
 
 console.log('projectId ', projectId, ' secret ', secret, ' ipfsEndpoint ', ipfsEndpoint, ' gateway ', gateway);
 
 const auth = 'Basic ' + Buffer.from(projectId + ':' + secret).toString('base64');
 console.log('auth ', auth);
-const ipsConfig = ((ipfsEndpoint.indexOf('localhost') != -1) ? ({
-  url: ipfsEndpoint,
-}) : ({
-  url: ipfsEndpoint,
-  headers: {
-    authorization: auth,
-  },
-}));
+const ipsConfig = ((ipfsEndpoint && ipfsEndpoint.indexOf('localhost') != -1) ?
+({ url: ipfsEndpoint,}) :
+({url: ipfsEndpoint, headers: {authorization: auth,},}));
 
 console.log('ipsConfig ', ipsConfig);
 const client = ipfsHttpClient(ipsConfig);
-
-import {
-  marketplaceAddress
-} from '../config'
-
-import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
 
 export default function CreateItem() {
   console.log('CreateItem');
@@ -62,28 +43,28 @@ export default function CreateItem() {
     console.log('onChange');
     const file = e.target.files[0]
     try {
-      const added = await client.add(
+      const added_data = await client.add(
         file, {
           progress: (prog) => console.log(`received: ${prog}`)
         }
       )
-      const url = `${gateway}/ipfs/${added.path}`
-      console.log('url ', url);
-      setFileUrl(url)
+      const url_added_data = `${gateway}/ipfs/${added_data.path}`
+      console.log('url_added_data ', url_added_data);
+      setFileUrl(url_added_data)
     } catch (error) {
       console.log('Error uploading file: ', error)
     }
 
     try {
-      const added_data = await client.add(JSON.stringify({
+      const added_meta_data = await client.add(JSON.stringify({
         metadata: {
           asset_origin: formInput.asset_origin,
           asset_material: formInput.asset_material
         }
       }));
-      const url_data = `${gateway}/ipfs/${added_data.path}`
-      console.log('url data ', url_data);
-      setDataUrl(url_data)
+      const url_added_meta_data = `${gateway}/ipfs/${added_meta_data.path}`
+      console.log('url_added_meta_data ', url_added_meta_data);
+      setDataUrl(url_added_meta_data)
     } catch (error) {
       console.log('Error uploading data: ', error)
     }
@@ -150,38 +131,19 @@ export default function CreateItem() {
 
   return ( <div className = "flex justify-center" ><
       div className = "w-1/2 flex flex-col pb-12" >
-    <input placeholder = "Asset Name" className = "mt-8 border rounded p-4"
-      required minLength="4" maxLength="40"
-      onChange = {e => updateFormInput({
-          ...formInput,
-          name: e.target.value})}/>
-    <textarea placeholder = "Asset Description" className = "mt-2 border rounded p-4"
-    required minLength="4" maxLength="100"
-      onChange = {e => updateFormInput({
-          ...formInput,
-          description: e.target.value})}/>
-    <textarea placeholder = "Asset Origin" className = "mt-2 border rounded p-4"
-    required minLength="4" maxLength="100"
-      onChange = {e => updateFormInput({
-          ...formInput,
-          asset_origin: e.target.value })}/>
-    <textarea placeholder = "Asset Material" className = "mt-2 border rounded p-4"
-    required minLength="4" maxLength="100"
-      onChange = {e => updateFormInput({
-          ...formInput,
-          asset_material: e.target.value})}/>
-    <input placeholder = "Asset Price in Eth" className = "mt-2 border rounded p-4"
-    required minLength="4" maxLength="100"
-      onChange = {e => updateFormInput({
-          ...formInput,
-          price: e.target.value})}/>
+    <input placeholder = "Name of NFT Asset" className = "mt-8 border rounded p-4"
+      onChange = {e => updateFormInput({...formInput,name: e.target.value})}/>
+    <textarea placeholder = "Description of the Asset" className = "mt-2 border rounded p-4"
+    onChange = {e => updateFormInput({...formInput,description: e.target.value})}/>
+    <textarea placeholder = "Asset Rarity Details" className = "mt-2 border rounded p-4"
+    onChange = {e => updateFormInput({...formInput,asset_origin: e.target.value })}/>
+    <textarea placeholder = "Asset Type like Photos, Music, Artwork, Moments, Cards etc." className = "mt-2 border rounded p-4"
+    onChange = {e => updateFormInput({...formInput,asset_material: e.target.value})}/>
+    <input placeholder = "Asset Price in ETH" className = "mt-2 border rounded p-4"
+    onChange = {e => updateFormInput({...formInput,price: e.target.value})}/>
     <input type = "file" name = "Asset" className = "my-4"
-    required minLength="1" maxLength="10"
-      onChange = {onChange}/>
-      {fileUrl && (
-        <Image className = "rounded mt-4"
-        width = "350" alt=""
-        src = {fileUrl}/>)}
+      onChange = {onChange}/> {fileUrl && (
+        <img className = "rounded mt-4" alt="" src = {fileUrl}/>)}
     <button onClick = {listNFTForSale}
       className = "font-bold mt-4 bg-blue-600 text-white rounded p-4 shadow-lg">
       Create NFT </button> </div> </div>

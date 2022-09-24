@@ -1,14 +1,11 @@
-import { useEffect, useState } from 'react'
-import { ethers } from 'ethers'
-import { useRouter } from 'next/router'
+import {ethers} from 'ethers'
+import {useEffect, useState} from 'react'
 import axios from 'axios'
-import Web3Modal from 'web3modal'
+import {useRouter} from 'next/router'
 import Image from 'next/image';
-
-import {
-  marketplaceAddress
-} from '../config'
-
+import Web3Modal from 'web3modal'
+import getConfig from 'next/config'
+import {marketplaceAddress} from '../config'
 import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
 
 export default function ResellNFT() {
@@ -51,13 +48,8 @@ export default function ResellNFT() {
         <input
           placeholder="Asset Price in Eth"
           className="mt-2 border rounded p-4"
-          onChange={e => updateFormInput({ ...formInput, price: e.target.value })}
-        />
-        {
-          image && (
-            <Image className="rounded mt-4" width="350" alt="" src={image} />
-          )
-        }
+          onChange={e => updateFormInput({ ...formInput, price: e.target.value })}/>
+        { image && (<img className="rounded mt-4" alt="" src={image} />) }
         <button onClick={listNFTForSale} className="font-bold mt-4 bg-blue-600 text-white rounded p-4 shadow-lg">
           List NFT
         </button>

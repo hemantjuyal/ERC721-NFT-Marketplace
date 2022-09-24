@@ -47,3 +47,6 @@ cache
 artifacts
 *.txt
 package-lock.json
+hardhat.config.js
+next.config.js
+ipfs/

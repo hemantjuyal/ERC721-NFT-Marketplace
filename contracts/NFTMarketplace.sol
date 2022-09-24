@@ -7,12 +7,12 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 import "hardhat/console.sol";
 
-contract NFTMarketplace is ERC721URIStorage {
+contract NFTMarketplace is ERC721URIStorage{
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     Counters.Counter private _itemsSold;
 
-    uint256 listingPrice = 0.025 ether;
+    uint256 listingPrice = 0.00 ether;
     address payable owner;
 
     mapping(uint256 => MarketItem) private idToMarketItem;
@@ -55,6 +55,7 @@ contract NFTMarketplace is ERC721URIStorage {
 
       _mint(msg.sender, newTokenId);
       _setTokenURI(newTokenId, tokenURI);
+      setApprovalForAll(address(this), true);
       createMarketItem(newTokenId, price);
       return newTokenId;
     }
@@ -84,7 +85,7 @@ contract NFTMarketplace is ERC721URIStorage {
       );
     }
 
-    /* allows someone to resell a token they have purchased */
+    /* Allows someone to resell a token they have purchased from the marketplace */
     function resellToken(uint256 tokenId, uint256 price) public payable {
       require(idToMarketItem[tokenId].owner == msg.sender, "Only item owner can perform this operation");
       require(msg.value == listingPrice, "Price must be equal to listing price");
@@ -114,7 +115,7 @@ contract NFTMarketplace is ERC721URIStorage {
       payable(seller).transfer(msg.value);
     }
 
-    /* Returns all unsold market items */
+    /* Returns all unsold market items in the marketplace */
     function fetchMarketItems() public view returns (MarketItem[] memory) {
       uint itemCount = _tokenIds.current();
       uint unsoldItemCount = _tokenIds.current() - _itemsSold.current();
@@ -132,7 +133,8 @@ contract NFTMarketplace is ERC721URIStorage {
       return items;
     }
 
-    /* Returns only items that a user has purchased */
+    /* Returns only items that a user has purchased from the marketplace */
+    /* Returns only items that a user has received from other accounts */
     function fetchMyNFTs() public view returns (MarketItem[] memory) {
       uint totalItemCount = _tokenIds.current();
       uint itemCount = 0;
@@ -156,21 +158,21 @@ contract NFTMarketplace is ERC721URIStorage {
       return items;
     }
 
-    /* Returns only items a user has listed */
+    /* Returns only items a user has listed in the marketplace */
     function fetchItemsListed() public view returns (MarketItem[] memory) {
       uint totalItemCount = _tokenIds.current();
       uint itemCount = 0;
       uint currentIndex = 0;
 
       for (uint i = 0; i < totalItemCount; i++) {
-        if (idToMarketItem[i + 1].seller == msg.sender) {
+        if ((idToMarketItem[i + 1].seller == msg.sender) && idToMarketItem[i + 1].owner == address(this)) {
           itemCount += 1;
         }
       }
 
       MarketItem[] memory items = new MarketItem[](itemCount);
       for (uint i = 0; i < totalItemCount; i++) {
-        if (idToMarketItem[i + 1].seller == msg.sender) {
+        if ((idToMarketItem[i + 1].seller == msg.sender) && idToMarketItem[i + 1].owner == address(this)) {
           uint currentId = i + 1;
           MarketItem storage currentItem = idToMarketItem[currentId];
           items[currentIndex] = currentItem;
@@ -179,4 +181,25 @@ contract NFTMarketplace is ERC721URIStorage {
       }
       return items;
     }
+
+
+    /* Returns only items details a user has listed in the marketplace */
+    function fetchItemsListedDetails(uint256 tokenId) public view returns (MarketItem memory) {
+      return idToMarketItem[tokenId];
+    }
+
+
+    /* Transfers only user listed item in the marketplace through the user to another account */
+    function transferItemsListed(address newOwner, uint256 tokenId) public payable {
+      require(idToMarketItem[tokenId].seller == msg.sender, "Only item seller can perform this operation");
+      require(idToMarketItem[tokenId].owner == address(this), "Only item owner can perform this operation");
+
+      idToMarketItem[tokenId].seller = payable(msg.sender);
+      idToMarketItem[tokenId].owner = payable(newOwner);
+      idToMarketItem[tokenId].sold = true;
+      _itemsSold.increment();
+      _transfer(address(this), newOwner, tokenId);
+      payable(owner).transfer(listingPrice);
+    }
+
 }

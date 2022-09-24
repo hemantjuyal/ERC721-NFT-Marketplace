@@ -1,23 +1,13 @@
-import {
-  ethers
-} from 'ethers'
-import {
-  useEffect,
-  useState
-} from 'react'
+import {ethers} from 'ethers'
+import {useEffect, useState} from 'react'
 import axios from 'axios'
-import Web3Modal from 'web3modal'
+import {useRouter} from 'next/router'
 import Image from 'next/image';
+import Web3Modal from 'web3modal'
 import getConfig from 'next/config'
-const {
-  publicRuntimeConfig
-} = getConfig()
-
-import {
-  marketplaceAddress
-} from '../config'
-
+import {marketplaceAddress} from '../config'
 import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
+const {publicRuntimeConfig} = getConfig()
 
 export default function Home() {
   const [nfts, setNfts] = useState([])
@@ -25,9 +15,11 @@ export default function Home() {
   useEffect(() => {
     loadNFTs()
   }, [])
+
+
   async function loadNFTs() {
     /* create a generic provider and query for unsold market items */
-    const networkEndpoint = publicRuntimeConfig.NETWORK_ENDPOINT_URL;
+    const networkEndpoint = process.env.NEXT_PUBLIC_NETWORK_ENDPOINT_URL;
     console.log('network endpoint', networkEndpoint);
     const provider = new ethers.providers.JsonRpcProvider(networkEndpoint)
     const contract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, provider)
@@ -72,16 +64,17 @@ export default function Home() {
     await transaction.wait()
     loadNFTs()
   }
-  if (loadingState === 'loaded' && !nfts.length) return ( < h1 className = "px-20 py-10 text-3xl" > No items listed in the marketplace < /h1>)
+  if (loadingState === 'loaded' && !nfts.length)
+  return ( < h1 className = "px-20 py-10 text-3xl" > No Items Listed in the Marketplace < /h1>)
     return (
       <div className = "flex justify-center" >
       <div className = "px-4" style = {{maxWidth: '1600px'}} >
       <h2 className="text-2xl py-2">Discover and Explore Items</h2>
       <h3 className="text-2xl py-2">Showing {nfts.length} results </h3>
       <div className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4" >
-      {nfts.map((nft, i) => (
+      { nfts.map((nft, i) => (
           <div key = {i}className = "border shadow rounded-xl overflow-hidden" >
-          <Image src = {nft.image} alt=""/>
+          <img src = {nft.image} alt=""/>
           <div className = "p-4" >
           <p style = {{height: '64px' }}className = "text-2xl font-semibold" > {nft.name} </p>
           <div style = {{ height: '70px', overflow: 'hidden'}} >
@@ -92,9 +85,7 @@ export default function Home() {
           <button className = "mt-4 w-full bg-blue-600 text-white font-bold py-2 px-12 rounded"
           onClick = {() => buyNft(nft)} > Buy </button>
           </div>
-          </div>
-        ))
-      }
+          </div> )) }
       </div>
       </div>
       </div>
