@@ -77,10 +77,10 @@ export default function CreatorDashboard() {
           {
             nfts.map((nft, i) => (
               <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <img src={nft.image} alt="" className="rounded" />
-                <div className="p-4 bg-green-900">
+                <Image src={nft.image} alt="" width={350} height={300} className="rounded" />
+                <div className="p-4 bg-blue-400">
                   <p className="text-2xl font-bold text-white">Price - {nft.price} Eth</p>
-                  <button className = "mt-4 w-full bg-blue-600 text-white font-bold py-2 px-12 rounded"
+                  <button className = "mt-4 w-4ull bg-purple-800 text-white font-bold py-2 px-12 rounded"
                   onClick = {() => detailsNft(nft)} > Details </button>
                 </div>
               </div>

@@ -11,10 +11,14 @@ module.exports = {
     hardhat: {
       chainId: 31337
     },
-    /*goreli: {
+    goerli: {
       url: process.env.NETWORK_ENDPOINT_URL,
       accounts: [process.env.PRIVATE_KEY]
-    },*/
+    },
+    mumbai: {
+      url: process.env.NETWORK_ENDPOINT_URL,
+      accounts: [process.env.PRIVATE_KEY]
+    },
   },
   solidity: {
     version: "0.8.4",

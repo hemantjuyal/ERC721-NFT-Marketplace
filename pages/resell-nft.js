@@ -49,8 +49,8 @@ export default function ResellNFT() {
           placeholder="Asset Price in Eth"
           className="mt-2 border rounded p-4"
           onChange={e => updateFormInput({ ...formInput, price: e.target.value })}/>
-        { image && (<img className="rounded mt-4" alt="" src={image} />) }
-        <button onClick={listNFTForSale} className="font-bold mt-4 bg-blue-600 text-white rounded p-4 shadow-lg">
+        { image && (<Image className="rounded mt-4" alt="" width={350} height={300} src={image} />) }
+        <button onClick={listNFTForSale} className="font-bold mt-4 bg-purple-800 text-white rounded p-4 shadow-lg">
           List NFT
         </button>
       </div>

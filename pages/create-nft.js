@@ -8,6 +8,7 @@ import getConfig from 'next/config'
 import {create as ipfsHttpClient} from 'ipfs-http-client'
 import {marketplaceAddress} from '../config'
 import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
+import Spinner from "./spinner";
 
 const {publicRuntimeConfig} = getConfig()
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
@@ -30,6 +31,7 @@ export default function CreateItem() {
   console.log('CreateItem');
   const [fileUrl, setFileUrl] = useState(null)
   const [dataUrl, setDataUrl] = useState(null)
+  const [isLoading, setIsLoading] = useState(false);
   const [formInput, updateFormInput] = useState({
     price: '',
     name: '',
@@ -38,6 +40,9 @@ export default function CreateItem() {
     asset_material: '',
   })
   const router = useRouter()
+
+  useEffect(() => {
+  }, [])
 
   async function onChange(e) {
     console.log('onChange');
@@ -106,6 +111,8 @@ export default function CreateItem() {
   }
 
   async function listNFTForSale() {
+    console.log('listNFTForSale');
+    setIsLoading(true);
     const url = await uploadToIPFS()
     if (url) {
       const web3Modal = new Web3Modal()
@@ -123,8 +130,10 @@ export default function CreateItem() {
       })
       let marketItem =  await transaction.wait()
       console.log('marketItem ',marketItem);
-
+      setIsLoading(false);
       router.push('/')
+    }else{
+      console.log('invalid url... nothing to upload');
     }
 
   }
@@ -143,9 +152,9 @@ export default function CreateItem() {
     onChange = {e => updateFormInput({...formInput,price: e.target.value})}/>
     <input type = "file" name = "Asset" className = "my-4"
       onChange = {onChange}/> {fileUrl && (
-        <img className = "rounded mt-4" alt="" src = {fileUrl}/>)}
+        <Image className = "rounded mt-4" alt="" width={350} height={300} src = {fileUrl}/>)}
     <button onClick = {listNFTForSale}
-      className = "font-bold mt-4 bg-blue-600 text-white rounded p-4 shadow-lg">
+      className = "font-bold mt-4 bg-purple-800 text-white rounded p-4 shadow-lg">
       Create NFT </button> </div> </div>
 )
 } //end

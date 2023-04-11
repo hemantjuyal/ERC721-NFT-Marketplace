@@ -95,15 +95,15 @@ export default function DetailsNFT() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           {
             <div className="border shadow rounded-xl overflow-hidden">
-              <img src={nfts.image} alt="" className="rounded" />
-              <div className="p-4 bg-green-900">
+              <Image src={nfts.image} alt="" width={350} height={300} className="rounded" />
+              <div className="p-4 bg-blue-900">
                 <p className="text-2xl font-bold text-white">Price - {nfts.price} Eth</p>
                 <input placeholder = "Transfer To Address" className = "mt-8 border rounded p-4"
                   required minLength="4" maxLength="100"
                   onChange = {e => updateFormInput({
                       ...formInput,
                       transferTo: e.target.value})}/>
-                <button className = "mt-4 w-full bg-blue-600 text-white font-bold py-2 px-12 rounded"
+                <button className = "mt-4 w-full bg-purple-800 text-white font-bold py-2 px-12 rounded"
                 onClick = {() => transferNFT()} > Transfer </button>
               </div>
               </div>
