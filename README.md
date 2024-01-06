@@ -1,4 +1,4 @@
-# ERC721 NFT Marketpace
+# ERC721 NFT Marketplace
 
 NFT marketplace having Listing, Selling and Buy features using
 
