@@ -1,2 +1,2 @@
-# my-nft-marketplace
-nft marketplace that has list, sell and buy features
+# NFT Marketpace
+NFT marketplace that has Listing, Selling and Buy features
